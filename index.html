@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Viagens - localStorage</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <h1><i class="fas fa-plane"></i> Cadastro de Viagens</h1>
+            <p class="subtitle">Armazenamento de dados com localStorage</p>
+        </header>
+
+        <main class="main-content">
+            <div class="content-grid">
+                <!-- Painel de Instruções -->
+                <section class="info-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-info-circle"></i> Como Funciona</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="info-text">
+                                <h3>Persistência de Dados</h3>
+                                <p>Os dados são salvos no navegador usando <strong>localStorage</strong>. Eles permanecem mesmo após fechar a página.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div class="info-text">
+                                <h3>Atualização em Tempo Real</h3>
+                                <p>A lista de viagens é atualizada automaticamente ao adicionar ou remover itens.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-trash-alt"></i>
+                            </div>
+                            <div class="info-text">
+                                <h3>Controle Total</h3>
+                                <p>Você pode editar, excluir ou limpar todos os dados quando quiser.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Viagens Cadastradas:</span>
+                                <span id="totalTrips" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Última Atualização:</span>
+                                <span id="lastUpdate" class="stat-value">Nunca</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Formulário de Cadastro -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-plus-circle"></i> Nova Viagem</h2>
+                        <p>Preencha os dados da sua próxima viagem</p>
+                    </div>
+                    
+                    <form id="tripForm" class="trip-form">
+                        <div class="form-group">
+                            <label for="destination">
+                                <i class="fas fa-map-marker-alt"></i> Destino
+                            </label>
+                            <input type="text" id="destination" placeholder="Ex: Paris, França" required>
+                            <div class="form-hint">Informe a cidade e país</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="travelDate">
+                                <i class="fas fa-calendar-alt"></i> Data da Viagem
+                            </label>
+                            <input type="date" id="travelDate" required>
+                            <div class="form-hint">Selecione a data de partida</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="travelerName">
+                                <i class="fas fa-user"></i> Nome do Viajante
+                            </label>
+                            <input type="text" id="travelerName" placeholder="Seu nome completo" required>
+                            <div class="form-hint">Nome de quem vai viajar</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="travelerEmail">
+                                <i class="fas fa-envelope"></i> E-mail
+                            </label>
+                            <input type="email" id="travelerEmail" placeholder="seu@email.com" required>
+                            <div class="form-hint">E-mail para contato</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="budget">
+                                <i class="fas fa-money-bill-wave"></i> Orçamento (R$)
+                            </label>
+                            <input type="number" id="budget" min="0" step="100" placeholder="5000" required>
+                            <div class="form-hint">Valor estimado para a viagem</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">
+                                <i class="fas fa-sticky-note"></i> Observações
+                            </label>
+                            <textarea id="notes" rows="3" placeholder="Pontos turísticos que quer visitar, restaurantes, etc."></textarea>
+                            <div class="form-hint">Detalhes importantes sobre a viagem</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Salvar Viagem
+                            </button>
+                            <button type="button" id="clearForm" class="btn btn-secondary">
+                                <i class="fas fa-broom"></i> Limpar Formulário
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Lista de Viagens -->
+                <section class="trips-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list"></i> Viagens Cadastradas</h2>
+                        <div class="section-actions">
+                            <button id="clearAll" class="btn btn-danger btn-small">
+                                <i class="fas fa-trash"></i> Limpar Tudo
+                            </button>
+                            <button id="exportData" class="btn btn-secondary btn-small">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="trips-container">
+                        <div id="tripsList" class="trips-list">
+                            <!-- Viagens serão inseridas aqui via JavaScript -->
+                            <div class="empty-state">
+                                <i class="fas fa-suitcase-rolling empty-icon"></i>
+                                <h3>Nenhuma viagem cadastrada</h3>
+                                <p>Adicione sua primeira viagem usando o formulário ao lado.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="trips-summary">
+                            <h3><i class="fas fa-chart-pie"></i> Resumo</h3>
+                            <div class="summary-content">
+                                <div class="summary-item">
+                                    <span class="summary-label">Total de Viagens:</span>
+                                    <span id="summaryCount" class="summary-value">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Orçamento Total:</span>
+                                    <span id="summaryBudget" class="summary-value">R$ 0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Próxima Viagem:</span>
+                                    <span id="nextTrip" class="summary-value">Nenhuma</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> Sobre este Projeto</h3>
+                    <p>Demonstração de persistência de dados usando localStorage. Desenvolvido para a Atividade 2 de Desenvolvimento Web.</p>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-exclamation-circle"></i> Limitações do localStorage</h3>
+                    <ul>
+                        <li>Dados são armazenados apenas no navegador atual</li>
+                        <li>Capacidade máxima de ~5MB</li>
+                        <li>Não é um banco de dados real</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fas fa-laptop-code"></i> Desenvolvido para fins educacionais &copy; 2023</p>
+                <p id="storageInfo">Espaço usado: <span id="storageUsed">0 KB</span> | Dados salvos localmente</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal para Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Editar Viagem</h2>
+                <button id="closeModal" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editId">
+                    
+                    <div class="form-group">
+                        <label for="editDestination">Destino</label>
+                        <input type="text" id="editDestination" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editDate">Data</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editBudget">Orçamento (R$)</label>
+                        <input type="number" id="editBudget" min="0" step="100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editNotes">Observações</label>
+                        <textarea id="editNotes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" id="cancelEdit" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
